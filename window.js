@@ -11,14 +11,16 @@ function Window(x, y, width, height, title, parent, content){
     this.divDragBar = null;
     this.divContentDiv = null;
     this.divContent = null;
+    this.divResizer = null;
 
     this.dragging = false;
+    this.resizing = false;
     this.relativePos = {
         x: null,
         y: null
     };
 
-    this.onload = function(){
+    this.generate = function(){
         this.div = document.createElement("div");
 
         this.div.style.position = "absolute";
@@ -26,8 +28,8 @@ function Window(x, y, width, height, title, parent, content){
         this.div.style.border = "1px solid black";
         this.div.style.left = this.x + "px";
         this.div.style.top = this.y + "px";
-        this.div.style.width = this.width + "px";
-        this.div.style.height = this.height + 28 + "px";
+        this.div.style.width = this.width + 2 + "px";
+        this.div.style.height = this.height + 26 + "px";
 
         this.parent.appendChild(this.div);
 
@@ -37,6 +39,7 @@ function Window(x, y, width, height, title, parent, content){
 
         this.divDragBar.style.border = "1px solid black";
         this.divDragBar.style.padding = "2px";
+        this.divDragBar.style.userSelect = "none";
         this.divDragBar.innerHTML = this.title;
 
         this.div.appendChild(this.divDragBar);
@@ -44,19 +47,35 @@ function Window(x, y, width, height, title, parent, content){
         this.divContentDiv = document.createElement("div");
 
         this.divContentDiv.style.border = "1px solid black";
+        this.divContentDiv.style.height = this.height + "px";
 
         this.div.appendChild(this.divContentDiv);
 
         this.divContent = this.content.cloneNode(true);
 
-        this.divContent.style.width = this.width - 2 + "px";
-        this.divContent.style.height = this.height + "px";
+        this.divContent.style.width = "100%";
+        this.divContent.style.height = "100%";
 
         this.divContentDiv.appendChild(this.divContent);
+
+        this.divResizer = document.createElement("div");
+
+        this.divResizer.style.width = "10px";
+        this.divResizer.style.height = "10px";
+        this.divResizer.style.right = "0px";
+        this.divResizer.style.bottom = "0px";
+        this.divResizer.style.cursor = "se-resize";
+        this.divResizer.style.position = "absolute";
+        this.divResizer.style.background = "black";
+
+        this.divContentDiv.appendChild(this.divResizer);
 
         this.divDragBar.addEventListener("dragstart", this.dragStart.bind(this), false);
         this.parent.addEventListener("dragover", this.dragOver, false);
         this.parent.addEventListener("drop", this.drop.bind(this), false);
+        this.divResizer.addEventListener("mousedown", this.resizeStart.bind(this), false);
+        this.divResizer.addEventListener("mousemove", this.resizeMove.bind(this), false);
+        this.divResizer.addEventListener("mouseup", this.resizestop.bind(this), false);
 
         this.front();
     };
@@ -91,6 +110,37 @@ function Window(x, y, width, height, title, parent, content){
         return false;
     };
 
+    this.resizeStart = function(event){
+        console.log("Start Resizing");
+
+        this.resizing = true;
+    }
+
+    this.resizeMove = function(event){
+        if(this.resizing){
+            console.log("Resizing");
+
+            var contentWidth = (event.clientX - this.div.offsetLeft) + 5;
+            var contentHeight = (event.clientY - this.div.offsetTop) + 5;
+
+            if(contentWidth >= 1){
+                this.div.style.width = contentWidth + "px";
+                this.divContentDiv.style.width = contentWidth - 2 + "px";
+            }
+            if(contentHeight >= 1){
+                this.div.style.height = contentHeight + "px";
+                this.divContentDiv.style.height = contentHeight - 26 + "px";
+            }
+
+            console.log(contentHeight);
+            
+        }
+    }
+
+    this.resizestop = function(event){
+        this.resizing = false;
+    }
+
     this.front = function(others){
         var length = this.parent.children.length;
 
@@ -103,5 +153,5 @@ function Window(x, y, width, height, title, parent, content){
         }
     }
 
-    this.onload();
+    this.generate();
 }
