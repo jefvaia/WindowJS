@@ -1,4 +1,4 @@
-# WinndowJS
+# WindowJS
 A simple window manager for the web
 ## Next feature
 - Resizable windows
