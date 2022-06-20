@@ -81,18 +81,17 @@ function Window(x, y, width, height, title, parent, content){
     };
 
     this.dragStart = function(event){
-        console.log("Start Dragging");
-
         this.dragging = true;
 
         var divBounds = this.div.getBoundingClientRect();
 
         this.relativePos.x = event.clientX - divBounds.left;
         this.relativePos.y = event.clientY - divBounds.top;
+
+        this.front();
     };
 
     this.dragOver = function(event){
-        console.log("Dragging");
         event.preventDefault(); 
         return false; 
     };
@@ -111,25 +110,27 @@ function Window(x, y, width, height, title, parent, content){
     };
 
     this.resizeStart = function(event){
-        console.log("Start Resizing");
-
         this.resizing = true;
+
+        this.front();
     }
 
     this.resizeMove = function(event){
         if(this.resizing){
-            console.log("Resizing");
-
             var contentWidth = (event.clientX - this.div.offsetLeft) + 5;
             var contentHeight = (event.clientY - this.div.offsetTop) + 5;
 
             if(contentWidth >= 1){
                 this.div.style.width = contentWidth + "px";
                 this.divContentDiv.style.width = contentWidth - 2 + "px";
+
+                this.width = contentWidth;
             }
             if(contentHeight >= 1){
                 this.div.style.height = contentHeight + "px";
                 this.divContentDiv.style.height = contentHeight - 26 + "px";
+
+                this.height = contentHeight;
             }
 
             console.log(contentHeight);
